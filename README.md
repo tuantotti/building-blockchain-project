@@ -9,15 +9,15 @@
 #### Bước 2: dùng puppeth (command tool in geth) để setup genesis block
 
 ```
-run: puppeth
-run: geth --datadir . init .\<tên file json chứa thông tin genesis block>
+puppeth
+geth --datadir . init .\<tên file json chứa thông tin genesis block>
 ```
 
 #### Bước 3: tạo account
 
 ```
-run: geth --datadir . account new
-run: geth --datadir . account list (check list account)
+geth --datadir . account new
+geth --datadir . account list (check list account)
 Done tạo private network và 3 account
 ```
 
@@ -25,7 +25,7 @@ Done tạo private network và 3 account
 
 ```
 cho tất cả các câu lệnh cần thiết vào 1 file: startnode.cmd
-run: file startnode.cmd
+file startnode.cmd
 (chạy file này xong sẽ Generating DAG algorithm sau đó thực hiện mine block)
 run: c (run geth console via ipc)
 ```
