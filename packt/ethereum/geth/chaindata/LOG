@@ -170,3 +170,40 @@
 12:47:02.524842 db@janitor F·6 G·1
 12:47:02.524842 db@janitor removing table-31
 12:47:02.528023 db@open done T·163.1003ms
+=============== Jan 4, 2023 (+07) ===============
+12:40:30.580189 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:40:30.594705 version@stat F·[1 2] S·3MiB[915KiB 2MiB] Sc·[0.25 0.02]
+12:40:30.594705 db@open opening
+12:40:30.595804 journal@recovery F·2
+12:40:30.602353 journal@recovery recovering @40
+12:40:30.625303 journal@recovery recovering @68
+12:40:30.647058 memdb@flush created L0@69 N·21361 S·1MiB "H\x00\t..\x9f\x1e[,v91446":"unc..own,v74522"
+12:40:30.647058 version@stat F·[2 2] S·4MiB[1MiB 2MiB] Sc·[0.50 0.02]
+12:40:30.665181 memdb@flush created L0@71 N·4088 S·218KiB "\x05b\xcb..뾓,v130334":"\xdd(:..\xe0\xf2\x1a,v130332"
+12:40:30.668298 version@stat F·[3 2] S·4MiB[2MiB 2MiB] Sc·[0.75 0.02]
+12:40:30.671304 db@janitor F·14 G·7
+12:40:30.671304 db@janitor removing table-58
+12:40:30.671304 db@janitor removing table-59
+12:40:30.671810 db@janitor removing table-60
+12:40:30.671810 db@janitor removing table-61
+12:40:30.672543 db@janitor removing table-64
+12:40:30.672543 db@janitor removing table-67
+12:40:30.673050 db@janitor removing manifest-69
+12:40:30.673625 db@open done T·77.9102ms
+12:40:30.845284 memdb@flush N·261 S·10KiB
+12:40:30.848033 memdb@flush created L0@74 N·261 S·10KiB "Sna..tor,v130597":"a\xff\xfa..\xfa\x9e\xe5,d130595"
+12:40:30.848033 version@stat F·[4 2] S·4MiB[2MiB 2MiB] Sc·[1.00 0.02]
+12:40:30.849704 memdb@flush committed F·1 T·4.4199ms
+12:40:30.850211 journal@remove removed @72
+12:40:30.850211 table@compaction range L-1 "a":"b"
+12:40:30.850211 table@compaction L0·4 -> L1·2 S·4MiB Q·130597
+12:40:30.930433 table@build created L1@75 N·34087 S·2MiB "\x01\xdc\xe6..\x01\xe5\x87,v1888":"h\x00\x00..\xbf\xa0\x03,v13060"
+12:40:30.995815 table@build created L1@76 N·24563 S·1MiB "h\x00\x00..\xa0\x03t,v13057":"\xff\xc1\xbe..k\xb4\xd2,v49200"
+12:40:30.995815 version@stat F·[0 2] S·3MiB[0B 3MiB] Sc·[0.00 0.04]
+12:40:30.997712 table@compaction committed F-4 S-581KiB Ke·0 D·19678 T·147.5006ms
+12:40:30.998265 table@remove removed @74
+12:40:30.998810 table@remove removed @71
+12:40:30.999367 table@remove removed @39
+12:40:31.000767 table@remove removed @38
+12:40:31.001272 table@remove removed @35
+12:40:31.004520 table@compaction range L-1 "o":"p"
