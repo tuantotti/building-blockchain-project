@@ -1,131 +1,146 @@
-function generate_seed()
-{
-	var new_seed = lightwallet.keystore.generateRandomSeed();
+// create seed to generate addresses and keys (multiple accounts)
+function generate_seed() {
+  // LightWallet provides APIs to create and sign transactions or encrypt and decrypt data using the addresses and keys generated using it.
+  // include: keystore, signing, encryption, and txutils
+  // signing, encrpytion, and txutils provide APIs to sign transactions, asymmetric cryptography, and create transactions respectively
+  /**
+	keystore namespace is used to create a keystore, generated seed, and so on. keystore is
+	an object that holds the seed and keys encrypted. The keystore namespace implements
+	transaction signer methods that requires signing the we3.eth.sendTransaction() calls if
+	we are using Hooked-Web3-Provider
+ */
+  var new_seed = lightwallet.keystore.generateRandomSeed();
 
-	document.getElementById("seed").value = new_seed;
+  document.getElementById("seed").value = new_seed;
 
-	generate_addresses(new_seed);
+  generate_addresses(new_seed);
 }
 
 var totalAddresses = 0;
 
-function generate_addresses(seed)
-{
-	if(seed == undefined)
-	{
-		seed = document.getElementById("seed").value;
-	}
+// generate address from a seed (account)
+function generate_addresses(seed) {
+  if (seed == undefined) {
+    seed = document.getElementById("seed").value;
+  }
 
-	if(!lightwallet.keystore.isSeedValid(seed))
-	{
-		document.getElementById("info").innerHTML = "Please enter a valid seed";
-		return;
-	}
+  if (!lightwallet.keystore.isSeedValid(seed)) {
+    document.getElementById("info").innerHTML = "Please enter a valid seed";
+    return;
+  }
 
-	totalAddresses = prompt("How many addresses do you want to generate");
+  totalAddresses = prompt("How many addresses do you want to generate");
 
-	if(!Number.isInteger(parseInt(totalAddresses)))
-	{
-		document.getElementById("info").innerHTML = "Please enter valid number of addresses";
-		return;
-	}
+  if (!Number.isInteger(parseInt(totalAddresses))) {
+    document.getElementById("info").innerHTML =
+      "Please enter valid number of addresses";
+    return;
+  }
 
-	var password = Math.random().toString();
+  var password = Math.random().toString();
 
-	lightwallet.keystore.createVault({
-		password: password,
-	  	seedPhrase: seed
-	}, function (err, ks) {
-	  	ks.keyFromPassword(password, function (err, pwDerivedKey) {
-	    	if(err)
-	    	{
-	    		document.getElementById("info").innerHTML = err;
-	    	}
-	    	else
-	    	{
-	    		ks.generateNewAddress(pwDerivedKey, totalAddresses);
-	    		var addresses = ks.getAddresses();	
-	    		
-	    		var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  // create keystore instance and generate addresses from random password
+  lightwallet.keystore.createVault(
+    {
+      password: password,
+      seedPhrase: seed,
+    },
+    function (err, ks) {
+      ks.keyFromPassword(password, function (err, pwDerivedKey) {
+        if (err) {
+          document.getElementById("info").innerHTML = err;
+        } else {
+          ks.generateNewAddress(pwDerivedKey, totalAddresses);
+          var addresses = ks.getAddresses();
 
-	    		var html = "";
+          var web3 = new Web3(
+            new Web3.providers.HttpProvider("http://localhost:8545")
+          );
 
-	    		for(var count = 0; count < addresses.length; count++)
-	    		{
-					var address = addresses[count];
-					var private_key = ks.exportPrivateKey(address, pwDerivedKey);
-					var balance = web3.eth.getBalance("0x" + address);
+          var html = "";
 
-					html = html + "<li>";
-					html = html + "<p><b>Address: </b>0x" + address + "</p>";
-					html = html + "<p><b>Private Key: </b>0x" + private_key + "</p>";
-					html = html + "<p><b>Balance: </b>" + web3.fromWei(balance, "ether") + " ether</p>";
-		    		html = html + "</li>";
-	    		}
+          for (var count = 0; count < addresses.length; count++) {
+            var address = addresses[count];
+            var private_key = ks.exportPrivateKey(address, pwDerivedKey);
+            var balance = web3.eth.getBalance("0x" + address);
 
-	    		document.getElementById("list").innerHTML = html;
-	    	}
-	  	});
-	});
+            html = html + "<li>";
+            html = html + "<p><b>Address: </b>0x" + address + "</p>";
+            html = html + "<p><b>Private Key: </b>0x" + private_key + "</p>";
+            html =
+              html +
+              "<p><b>Balance: </b>" +
+              web3.fromWei(balance, "ether") +
+              " ether</p>";
+            html = html + "</li>";
+          }
+
+          document.getElementById("list").innerHTML = html;
+        }
+      });
+    }
+  );
 }
 
-function send_ether()
-{
-	console.log('send ether');
-	var	seed = document.getElementById("seed").value;
+function send_ether() {
+  console.log("send ether");
+  var seed = document.getElementById("seed").value;
 
-	if(!lightwallet.keystore.isSeedValid(seed))
-	{
-		document.getElementById("info").innerHTML = "Please enter a valid seed";
-		return;
-	}
+  if (!lightwallet.keystore.isSeedValid(seed)) {
+    document.getElementById("info").innerHTML = "Please enter a valid seed";
+    return;
+  }
 
-	var password = Math.random().toString();
+  var password = Math.random().toString();
 
-	lightwallet.keystore.createVault({
-		password: password,
-	  	seedPhrase: seed
-	}, function (err, ks) {
-	  	ks.keyFromPassword(password, function (err, pwDerivedKey) {
-	    	if(err)
-	    	{
-	    		document.getElementById("info").innerHTML = err;
-	    	}
-	    	else
-	    	{
-	    		ks.generateNewAddress(pwDerivedKey, totalAddresses);
+  lightwallet.keystore.createVault(
+    {
+      password: password,
+      seedPhrase: seed,
+    },
+    function (err, ks) {
+      ks.keyFromPassword(password, function (err, pwDerivedKey) {
+        if (err) {
+          document.getElementById("info").innerHTML = err;
+        } else {
+          ks.generateNewAddress(pwDerivedKey, totalAddresses);
 
-	    		ks.passwordProvider = function (callback) {
-			      	callback(null, password);
-			    };
+          ks.passwordProvider = function (callback) {
+            callback(null, password);
+          };
 
-			    var provider = new HookedWeb3Provider({
-  					host: "http://localhost:8545",
-  					transaction_signer: ks
-				});
+          var provider = new HookedWeb3Provider({
+            host: "http://localhost:8545",
+            transaction_signer: ks,
+          });
 
-			    var web3 = new Web3(provider);
+          var web3 = new Web3(provider);
 
-			    var from = document.getElementById("address1").value;
-				var to = document.getElementById("address2").value;
-			    var value = web3.toWei(document.getElementById("ether").value, "ether");
+          var from = document.getElementById("address1").value;
+          var to = document.getElementById("address2").value;
+          var value = web3.toWei(
+            document.getElementById("ether").value,
+            "ether"
+          );
 
-			    web3.eth.sendTransaction({
-			    	from: from,
-			    	to: to,
-			    	value: value,
-			    	gas: 50000
-			    }, function(error, result){
-			    	if(error)
-			    	{	
-			    		document.getElementById("info").innerHTML = error;
-			    	}
-			    	else
-			    	{
-			    		document.getElementById("info").innerHTML = "Txn hash: " + result;
-			    	}
-			    })
-	    	}
-	  	});
-	});
+          web3.eth.sendTransaction(
+            {
+              from: from,
+              to: to,
+              value: value,
+              gas: 50000,
+            },
+            function (error, result) {
+              if (error) {
+                document.getElementById("info").innerHTML = error;
+              } else {
+                document.getElementById("info").innerHTML =
+                  "Txn hash: " + result;
+              }
+            }
+          );
+        }
+      });
+    }
+  );
 }

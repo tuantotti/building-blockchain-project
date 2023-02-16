@@ -9,50 +9,37 @@ web3 = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
 var proofContract = new web3.eth.Contract(
   [
     {
-      anonymous: false,
-      inputs: [
-        { indexed: false, internalType: "bool", name: "status", type: "bool" },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "string",
-          name: "owner",
-          type: "string",
-        },
-        {
-          indexed: false,
-          internalType: "string",
-          name: "fileHash",
-          type: "string",
-        },
-      ],
-      name: "logFileAddedStatus",
-      type: "event",
-    },
-    {
-      inputs: [{ internalType: "string", name: "fileHash", type: "string" }],
+      constant: false,
+      inputs: [{ name: "fileHash", type: "string" }],
       name: "get",
       outputs: [
-        { internalType: "uint256", name: "timestamp", type: "uint256" },
-        { internalType: "string", name: "owner", type: "string" },
+        { name: "timestamp", type: "uint256" },
+        { name: "owner", type: "string" },
       ],
-      stateMutability: "view",
+      payable: false,
       type: "function",
     },
     {
+      constant: false,
       inputs: [
-        { internalType: "string", name: "owner", type: "string" },
-        { internalType: "string", name: "fileHash", type: "string" },
+        { name: "owner", type: "string" },
+        { name: "fileHash", type: "string" },
       ],
       name: "set",
       outputs: [],
-      stateMutability: "nonpayable",
+      payable: false,
       type: "function",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        { indexed: false, name: "status", type: "bool" },
+        { indexed: false, name: "timestamp", type: "uint256" },
+        { indexed: false, name: "owner", type: "string" },
+        { indexed: false, name: "fileHash", type: "string" },
+      ],
+      name: "logFileAddedStatus",
+      type: "event",
     },
   ],
   "0x4A69A347A236665146E924A8a8Ab995402Be5280" // address of the smart contract
@@ -73,7 +60,8 @@ var io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log(socket.id);
+  socket.on("disconnect", () => console.log("user disconnected"));
 });
 
 server.listen(8080, () => {
@@ -82,7 +70,7 @@ server.listen(8080, () => {
 
 app.use(express.static("public"));
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/public/html/index.html");
+  res.sendFile(__dirname + "/public/index.html");
 });
 
 app.get("/submit", function (req, res) {
@@ -92,54 +80,33 @@ app.get("/submit", function (req, res) {
     .set(owner, fileHash)
     .send({
       from: "0xdffc38c03a87f4f3b0d6fc160433735ceb4665e1",
+      gas: 50000,
     })
-    .on("transactionHash", function (transactionHash) {
+    .on("transactionHash", (transactionHash) => {
       res.send(transactionHash);
     });
 });
 
 app.get("/getInfo", function (req, res) {
   var fileHash = req.query.hash;
+  console.log(typeof fileHash);
+  console.log(fileHash);
   proofContract.methods
     .get(fileHash)
     .call()
     .then((result) => {
       console.log(result);
-      res.send(result);
     });
 });
 
 // subcribe event
-proofContract.events.logFileAddedStatus({ fromBlock: 0 }, (error, event) => {
-  if (error) {
-    console.log(error);
+proofContract.events.logFileAddedStatus(
+  { fromBlock: 0, gas: 50000 },
+  (error, result) => {
+    if (!error) {
+      if (result.args.status == true) {
+        io.send(result);
+      }
+    }
   }
-
-  console.log("hihi" + event);
-});
-// .on("connected", function (subscriptionId) {
-//   console.log(subscriptionId);
-// })
-// .on("data", function (event) {
-//   console.log(event); // same results as the optional callback above
-// })
-// .on("changed", function (event) {
-//   console.log(event); // remove event from local database
-// })
-// .on("error", function (error, receipt) {
-//   console.log(receipt); // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-// });
-
-// proofContract.getPastEvents(
-//   "logFileAddedStatus",
-//   { fromBlock: 0 },
-//   (error, event) => {
-//     if (error) {
-//       console.log(error);
-//     }
-
-//     if (event) {
-//       console.log(event);
-//     }
-//   }
-// );
+);

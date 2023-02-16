@@ -42,29 +42,33 @@ function getInfo() {
   }
 }
 
-var socket = io("http://localhost:8080");
+const socket = io();
 console.log(socket);
-socket.on("message", function (msg) {
-  console.log(msg);
-  if ($("#events_list").text() == "No Transaction Found") {
-    $("#events_list").html(
-      "<li>Txn Hash: " +
-        msg.transactionHash +
-        "nOwner: " +
-        msg.args.owner +
-        "nFile Hash: " +
-        msg.args.fileHash +
-        "</li>"
-    );
-  } else {
-    $("#events_list").prepend(
-      "<li>Txn Hash: " +
-        msg.transactionHash +
-        "nOwner: " +
-        msg.args.owner +
-        "nFile Hash: " +
-        msg.args.fileHash +
-        "</li>"
-    );
-  }
+socket.on("connect", () => {
+  console.log(socket.id);
+  console.log(socket);
+  socket.on("message", (msg) => {
+    console.log(msg);
+    if ($("#events_list").text() == "No Transaction Found") {
+      $("#events_list").html(
+        "<li>Txn Hash: " +
+          msg.transactionHash +
+          "nOwner: " +
+          msg.args.owner +
+          "nFile Hash: " +
+          msg.args.fileHash +
+          "</li>"
+      );
+    } else {
+      $("#events_list").prepend(
+        "<li>Txn Hash: " +
+          msg.transactionHash +
+          "nOwner: " +
+          msg.args.owner +
+          "nFile Hash: " +
+          msg.args.fileHash +
+          "</li>"
+      );
+    }
+  });
 });

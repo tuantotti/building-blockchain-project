@@ -73,25 +73,7 @@ shrink-to-fit=no"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
-
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"
-      integrity="sha512-HTENHrkQ/P0NGDFd5nk6ibVtCkcM7jhr2c7GyvXp5O+4X6O5cQO9AhqFzM+MdeBivsX7Hoys2J7pp2wdgMpCvw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-
-    <script>
-      // Add the following code if you want the name of the file appear on select
-      $(".custom-file-input").on("change", function () {
-        var fileName = $(this).val().split("\\").pop();
-        $(this)
-          .siblings(".custom-file-label")
-          .addClass("selected")
-          .html(fileName);
-      });
-    </script>
-
+    <script src="socket.io/socket.io.js"></script>
     <script type="text/javascript" src="./js/main.js"></script>
   </body>
 </html>
